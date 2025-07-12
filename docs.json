@@ -34,7 +34,10 @@
         "groups": [
           {
             "group": "Agents",
-            "pages": ["api-reference/endpoint/list"]
+            "pages": [
+              "api-reference/endpoint/list",
+              "api-reference/endpoint/get"
+            ]
           }
         ]
       }

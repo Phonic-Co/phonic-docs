@@ -2,7 +2,8 @@
   "name": "phonic-docs",
   "version": "0.1.0",
   "scripts": {
-    "check": "biome check --write"
+    "check": "biome check --write",
+    "openapi-check": "mint openapi-check ./api-reference/openapi.yaml"
   },
   "dependencies": {},
   "devDependencies": {

@@ -38,32 +38,7 @@ paths:
                   - agents
               example:
                 agents:
-                  - id: agent_12cf6e88-c254-4d3e-a149-ddf1bdd22783
-                    name: my-agent
-                    phone_number: '+1234567890'
-                    project:
-                      id: proj_ad0334f1-2404-4155-9df3-bfd8129b29ad
-                      name: customer-support
-                    timezone: America/Los_Angeles
-                    voice_id: grant
-                    audio_format: pcm_44100
-                    welcome_message: Hello! How can I help you today?
-                    system_prompt: You are a helpful customer support agent. Be friendly and concise.
-                    template_variables: {}
-                    tools:
-                      - keypad_input
-                    no_input_poke_sec: 30
-                    no_input_poke_text: Are you still there?
-                    no_input_end_conversation_sec: 180
-                    boosted_keywords:
-                      - appointment
-                      - booking
-                      - cancel
-                    configuration_endpoint:
-                      url: https://api.example.com/config
-                      headers:
-                        Authorization: Bearer token123
-                      timeout_ms: 2000
+                  - $ref: '#/components/examples/AgentExample/value'
       x-codeSamples:
         - lang: typescript
           source: |
@@ -74,6 +49,51 @@ paths:
             const agentsResult = await phonic.agents.list({
               project: "customer-support"
             });
+        - lang: python
+          source: |
+            TODO
+  /agents/{nameOrId}:
+    get:
+      description: Returns a specific agent by name or ID.
+      parameters:
+        - name: nameOrId
+          in: path
+          description: The name or the ID of the agent to get.
+          required: true
+          schema:
+            type: string
+          example: support-agent
+        - name: project
+          in: query
+          description: The name of the project containing the agent. Only used when looking up by name.
+          required: false
+          schema:
+            type: string
+            default: main
+          example: my-project
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agent:
+                    $ref: '#/components/schemas/Agent'
+                required:
+                  - agent
+              example:
+                agent:
+                  $ref: '#/components/examples/AgentExample/value'
+      x-codeSamples:
+        - lang: typescript
+          source: |
+            import { Phonic } from "phonic";
+
+            const phonic = new Phonic("ph_...");
+
+            const agent = await phonic.agents.get("support-agent");
         - lang: python
           source: |
             TODO
@@ -200,6 +220,39 @@ components:
         - boosted_keywords
         - configuration_endpoint
         - phone_number
+  examples:
+    AgentExample:
+      value:
+        id: agent_12cf6e88-c254-4d3e-a149-a7f1bdd22783
+        name: support-agent
+        phone_number: '+1234567890'
+        project:
+          id: proj_ad0334f1-2487-4155-9df3-abd8129b29ad
+          name: customer-support
+        timezone: America/Los_Angeles
+        voice_id: grant
+        audio_format: pcm_44100
+        welcome_message: Hey {{customer_name}}. How can I help you today?
+        system_prompt: You are an expert in {{subject}}. Be friendly, helpful and concise.
+        template_variables:
+          customer_name:
+            default_value: null
+          subject:
+            default_value: Chess
+        tools:
+          - keypad_input
+        no_input_poke_sec: 30
+        no_input_poke_text: Are you still there?
+        no_input_end_conversation_sec: 180
+        boosted_keywords:
+          - appointment
+          - booking
+          - cancel
+        configuration_endpoint:
+          url: https://api.example.com/config
+          headers:
+            Authorization: Bearer token123
+          timeout_ms: 2000
   securitySchemes:
     bearerAuth:
       type: http
