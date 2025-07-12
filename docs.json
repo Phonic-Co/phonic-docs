@@ -36,7 +36,8 @@
             "group": "Agents",
             "pages": [
               "api-reference/endpoint/list",
-              "api-reference/endpoint/get"
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create"
             ]
           }
         ]

@@ -29,6 +29,6 @@
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "files": {
-    "includes": ["**/*.ts", "**/*.json", "**/*.md"]
+    "includes": ["**/*.ts", "**/*.json", "**/*.yaml", "**/*.md", "**/*.mdx"]
   }
 }
