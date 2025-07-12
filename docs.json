@@ -49,7 +49,7 @@
       "display": "interactive"
     },
     "examples": {
-      "languages": ["javascript", "python", "curl"]
+      "languages": ["typescript", "python", "curl"]
     }
   },
   "navbar": {

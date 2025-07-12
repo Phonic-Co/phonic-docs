@@ -1,4 +1,9 @@
 {
+  "name": "phonic-docs",
+  "version": "0.1.0",
+  "scripts": {
+    "check": "biome check --write"
+  },
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "2.0.6"
