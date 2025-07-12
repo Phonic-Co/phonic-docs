@@ -93,7 +93,9 @@ paths:
 
             const phonic = new Phonic("ph_...");
 
-            const agent = await phonic.agents.get("support-agent");
+            const agent = await phonic.agents.get("support-agent", {
+              project: "customer-support"
+            });
         - lang: python
           source: |
             TODO
