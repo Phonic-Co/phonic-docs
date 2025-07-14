@@ -26,7 +26,10 @@ The webhook sends a POST request with the following JSON payload:
 Here's an example of how to handle the webhook in a [Hono](https://hono.dev) app:
 
 ```typescript
+import { Hono } from "hono";
 import { Webhook } from "svix";
+
+const app = new Hono();
 
 app.post("/webhooks/phonic", async (c) => {
   if (!process.env.PHONIC_WEBHOOK_SECRET) {
@@ -52,4 +55,6 @@ app.post("/webhooks/phonic", async (c) => {
     return c.text("Bad Request", 400);
   }
 });
+
+export default app;
 ```
