@@ -43,6 +43,10 @@
           {
             "group": "Conversations",
             "pages": ["api-reference/conversations/outbound_call"]
+          },
+          {
+            "group": "Webhooks",
+            "pages": ["api-reference/webhooks/conversation_analysis"]
           }
         ]
       }

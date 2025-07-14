@@ -50,7 +50,7 @@ paths:
             });
         - lang: python
           source: |
-            TODO
+            Coming soon
     post:
       description: Creates a new agent in a project.
       parameters:
@@ -132,7 +132,7 @@ paths:
             });
         - lang: python
           source: |
-            TODO
+            Coming soon
   /agents/{nameOrId}:
     get:
       description: Returns a specific agent by name or ID.
@@ -177,7 +177,7 @@ paths:
             });
         - lang: python
           source: |
-            TODO
+            Coming soon
   /conversations/outbound_call:
     post:
       description: Initiates an outbound call to a phone number.
@@ -242,7 +242,7 @@ paths:
             });
         - lang: python
           source: |
-            TODO
+            Coming soon
 components:
   schemas:
     Agent:

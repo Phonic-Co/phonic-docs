@@ -1,0 +1,55 @@
+---
+title: 'conversation.analysis'
+---
+
+The conversation analysis webhook is triggered when a conversation ends and the analysis is completed.
+
+## Webhook payload
+
+The webhook sends a POST request with the following JSON payload:
+
+```typescript
+{
+  "conversation": {
+    "latencies_ms": Array<number>;
+    "num_interruptions": number;
+  },
+  "call_info": {
+    "from_phone_number": string;
+    "to_phone_number": string;
+  } | null
+}
+```
+
+## Example usage
+
+Here's an example of how to handle the webhook in a [Hono](https://hono.dev) app:
+
+```typescript
+import { Webhook } from "svix";
+
+app.post("/webhooks/phonic", async (c) => {
+  if (!process.env.PHONIC_WEBHOOK_SECRET) {
+    return c.text("Bad Request", 400);
+  }
+
+  const wh = new Webhook(process.env.PHONIC_WEBHOOK_SECRET);
+  const rawBody = await c.req.text();
+
+  try {
+    const payload = wh.verify(rawBody, {
+      "svix-id": c.req.header("svix-id") ?? "",
+      "svix-timestamp": c.req.header("svix-timestamp") ?? "",
+      "svix-signature": c.req.header("svix-signature") ?? "",
+    });
+
+    console.log(payload);
+
+    return c.text("OK", 200);
+  } catch (error) {
+    console.error("Failed to verify webhook:", error);
+
+    return c.text("Bad Request", 400);
+  }
+});
+```
