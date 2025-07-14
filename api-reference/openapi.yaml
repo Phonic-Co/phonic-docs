@@ -490,7 +490,7 @@ components:
         - to_phone_number
     OutboundCallConfig:
       type: object
-      description: When `agent` is provided, these `config` options override the agent’s settings.
+      description: When an `agent` is provided, these `config` options override the agent settings.
       properties:
         agent:
           type: string
@@ -588,4 +588,5 @@ components:
   securitySchemes:
     bearerAuth:
       type: http
-      scheme: bearer 
+      scheme: bearer
+      description: Bearer authentication header of the form `Bearer <PHONIC_API_KEY>`. Manage your API keys [here](https://phonic.co/api-keys).
