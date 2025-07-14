@@ -180,7 +180,7 @@ paths:
             Coming soon
   /conversations/outbound_call:
     post:
-      description: Initiates an outbound call to a phone number.
+      description: Initiates a call to a given phone number.
       requestBody:
         required: true
         content:

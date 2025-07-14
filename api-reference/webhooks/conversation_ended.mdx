@@ -1,0 +1,93 @@
+---
+title: 'conversation.ended'
+---
+
+The conversation ended webhook is triggered when a conversation ends.
+
+## Webhook payload
+
+Here is an example of the POST request JSON payload:
+
+```json
+{
+  "event_type": "conversation.ended",
+  "data": {
+    "conversation": {
+      "id": "conv_894dcb66-c3dd-4160-8606-30387e8ab9b5",
+      "external_id": null,
+      "workspace": "phonic",
+      "project": {
+        "id": "proj_8e5bdac5-868d-46fa-b397-439e777f7bfd",
+        "name": "main"
+      },
+      "audio_url": "...",
+      "model": "merritt",
+      "input_format": "pcm_44100",
+      "output_format": "pcm_44100",
+      "welcome_message": "Hey, how can I help?",
+      "template_variables": {},
+      "items": [
+        {
+          "item_idx": 0,
+          "role": "assistant",
+          "voice_id": "grant",
+          "duration_ms": 26.71,
+          "output_audio_speed": 1,
+          "system_prompt": "Help the user to book a dentist appointment.",
+          "text": "Hey, how can I help?",
+          "tool_calls": [],
+          "started_at": "2025-07-14T11:35:41.717Z",
+        }
+      ],
+      "text": "Hey, how can I help?",
+      "summary": null,
+      "duration_ms": 46537,
+      "started_at": "2025-07-14T11:35:40.617Z",
+      "ended_at": "2025-07-14T11:36:27.154Z"
+    },
+    "call_info": {
+      "from_phone_number": "+17124583766",
+      "to_phone_number": "+19189397081"
+    }
+  },
+  "created_at": "2025-07-14T11:36:33.768Z"
+}
+```
+
+## Example usage
+
+Here's an example of how to handle the webhook in a [Hono](https://hono.dev) app:
+
+```typescript
+import { Hono } from "hono";
+import { Webhook } from "svix";
+
+const app = new Hono();
+
+app.post("/webhooks/phonic", async (c) => {
+  if (!process.env.PHONIC_WEBHOOK_SECRET) {
+    return c.text("Bad Request", 400);
+  }
+
+  const wh = new Webhook(process.env.PHONIC_WEBHOOK_SECRET);
+  const rawBody = await c.req.text();
+
+  try {
+    const payload = wh.verify(rawBody, {
+      "svix-id": c.req.header("svix-id") ?? "",
+      "svix-timestamp": c.req.header("svix-timestamp") ?? "",
+      "svix-signature": c.req.header("svix-signature") ?? "",
+    });
+
+    console.log(JSON.stringify(payload, null, 2));
+
+    return c.text("OK", 200);
+  } catch (error) {
+    console.error("Failed to verify webhook:", error);
+
+    return c.text("Bad Request", 400);
+  }
+});
+
+export default app;
+```

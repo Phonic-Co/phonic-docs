@@ -23,10 +23,18 @@
           {
             "group": "Conversations",
             "pages": ["api-reference/conversations/outbound_call"]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Webhooks",
+        "groups": [
           {
-            "group": "Webhooks",
-            "pages": ["api-reference/webhooks/conversation_analysis"]
+            "group": "Conversations",
+            "pages": [
+              "api-reference/webhooks/conversation_analysis",
+              "api-reference/webhooks/conversation_ended"
+            ]
           }
         ]
       }

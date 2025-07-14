@@ -6,18 +6,22 @@ The conversation analysis webhook is triggered when a conversation ends and the 
 
 ## Webhook payload
 
-The webhook sends a POST request with the following JSON payload:
+Here is an example of the POST request JSON payload:
 
-```typescript
+```json
 {
-  "conversation": {
-    "latencies_ms": Array<number>;
-    "num_interruptions": number;
+  "event_type": "conversation.analysis",
+  "data": {
+    "conversation": {
+      "latencies_ms": [3179, 935, 595],
+      "interruptions_count": 1
+    },
+    "call_info": {
+      "from_phone_number": "+17124583766",
+      "to_phone_number": "+19189397081"
+    },
   },
-  "call_info": {
-    "from_phone_number": string;
-    "to_phone_number": string;
-  } | null
+  "created_at": "2025-07-14T11:36:33.767Z"
 }
 ```
 
@@ -46,7 +50,7 @@ app.post("/webhooks/phonic", async (c) => {
       "svix-signature": c.req.header("svix-signature") ?? "",
     });
 
-    console.log(payload);
+    console.log(JSON.stringify(payload, null, 2));
 
     return c.text("OK", 200);
   } catch (error) {
