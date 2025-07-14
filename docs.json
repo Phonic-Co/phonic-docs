@@ -35,10 +35,14 @@
           {
             "group": "Agents",
             "pages": [
-              "api-reference/endpoint/list",
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create"
+              "api-reference/agents/list",
+              "api-reference/agents/get",
+              "api-reference/agents/create"
             ]
+          },
+          {
+            "group": "Conversations",
+            "pages": ["api-reference/conversations/outbound_call"]
           }
         ]
       }

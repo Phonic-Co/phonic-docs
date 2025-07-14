@@ -72,7 +72,7 @@ paths:
               phone_number: assign-automatically
               timezone: America/Los_Angeles
               voice_id: sarah
-              welcome_message: Hey {{customer_name}}. How can I help you today?
+              welcome_message: Hi {{customer_name}}. How can I help you today?
               system_prompt: You are an expert in {{subject}}. Be friendly, helpful and concise.
               tools: ["keypad_input"]
               boosted_keywords: ["Load ID", "dispatch"]
@@ -116,7 +116,7 @@ paths:
               phone_number: "assign-automatically",
               timezone: "America/Los_Angeles",
               voice_id: "sarah",
-              welcome_message: "Hey {{customer_name}}. How can I help you today?",
+              welcome_message: "Hi {{customer_name}}. How can I help you today?",
               system_prompt: "You are an expert in {{subject}}. Be friendly, helpful and concise.",
               tools: ["keypad_input"],
               boosted_keywords: ["Load ID", "dispatch"],
@@ -178,6 +178,71 @@ paths:
         - lang: python
           source: |
             TODO
+  /conversations/outbound_call:
+    post:
+      description: Initiates an outbound call to a phone number.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutboundCallRequest"
+            example:
+              to_phone_number: "+19189397081"
+              config:
+                agent: "support-agent"
+                welcome_message: "Hi {{customer_name}}. How can I help you today?"
+                system_prompt: "You are an expert in {{subject}}. Be friendly, helpful and concise."
+                template_variables:
+                  customer_name: "David"
+                  subject: "Chess"
+                voice_id: "sarah"
+                no_input_poke_sec: 30
+                no_input_poke_text: "Are you still there?"
+                no_input_end_conversation_sec: 180
+                boosted_keywords: ["Load ID", "dispatch"]
+                tools: ["keypad_input"]
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversation_id:
+                    type: string
+                    description: The ID of the created conversation.
+                required:
+                  - conversation_id
+              example:
+                conversation_id: "conv_12cf6e88-c254-233e-a149-b2f1bdd22783"
+      x-codeSamples:
+        - lang: typescript
+          source: |
+            import { Phonic } from "phonic";
+
+            const phonic = new Phonic("ph_...");
+
+            const outboundCallResult = await phonic.conversations.outboundCall("+19189397081", {
+              agent: "support-agent",
+              // Optional overrides of agent settings
+              welcome_message: "Hi {{customer_name}}. How can I help you today?",
+              system_prompt: "You are an expert in {{subject}}. Be friendly, helpful and concise.",
+              template_variables: {
+                customer_name: "David",
+                subject: "Chess"
+              },
+              voice_id: "sarah",
+              no_input_poke_sec: 30,
+              no_input_poke_text: "Are you still there?",
+              no_input_end_conversation_sec: 180,
+              boosted_keywords: ["Load ID", "dispatch"],
+              tools: ["keypad_input"]
+            });
+        - lang: python
+          source: |
+            TODO
 components:
   schemas:
     Agent:
@@ -219,10 +284,10 @@ components:
           description: The audio format of the agent. If the agent has a phone number, the audio format will be `mulaw_8000`.
         welcome_message:
           type: [string, "null"]
-          description: The first message that the agent says when the conversation starts, or `null` if the agent does not say anything.
+          description: Message to play when the conversation starts.
         system_prompt:
           type: string
-          description: The system prompt that the agent uses to guide its behavior.
+          description: Instructions for the conversation.
         template_variables:
           type: object
           additionalProperties:
@@ -253,7 +318,7 @@ components:
           description: List of tools available to the agent.
         no_input_poke_sec:
           type: [integer, "null"]
-          description: Number of seconds of silence before sending a poke message. `null` if the agent does not send a poke message.
+          description: Number of seconds of silence before sending a poke message. `null` disables the poke message.
         no_input_poke_text:
           type: string
           description: The message to send after the specified silence.
@@ -337,10 +402,10 @@ components:
           type: string
           description: Message to play when the conversation starts. Can contain template variables like `{{customer_name}}`.
           default: ""
-          example: Hey {{customer_name}}. How can I help you today?
+          example: Hi {{customer_name}}. How can I help you today?
         system_prompt:
           type: string
-          description: The system prompt that the agent will use to guide its behavior. Can contain template variables like `{{subject}}`.
+          description: Instructions for the conversation. Can contain template variables like `{{subject}}`.
           default: Respond in 1-2 sentences.
           example: You are an expert in {{subject}}. Be friendly, helpful and concise.
         template_variables:
@@ -370,12 +435,11 @@ components:
               - type: string
                 description: Custom tool
                 example: send_email
-          description: Array of built-in or custom tool names to use during conversations.
-          default: []
+          description: Array of built-in or custom tool names to use.
         no_input_poke_sec:
           type: [integer, "null"]
-          description: Number of seconds of silence before sending a poke message. `null` if the agent does not send a poke message.
-          default: null
+          description: Number of seconds of silence before sending a poke message. `null` disables the poke message.
+          default: "null"
         no_input_poke_text:
           type: string
           description: The message to send after the specified silence.
@@ -389,7 +453,6 @@ components:
           items:
             type: string
           description: These words, or short phrases, will be more accurately recognized by the agent. 
-          default: []
           example: ["Load ID", "dispatch"]
         configuration_endpoint:
           type: [object, "null"]
@@ -411,9 +474,87 @@ components:
           required:
             - url
           description: When not `null`, the agent will make a POST request to this endpoint to get configuration options when the conversation starts.
-          default: null
+          default: "null"
       required:
         - name
+    OutboundCallRequest:
+      type: object
+      properties:
+        to_phone_number:
+          type: string
+          description: The phone number to call in E.164 format.
+          example: "+19189397081"
+        config:
+          $ref: "#/components/schemas/OutboundCallConfig"
+      required:
+        - to_phone_number
+    OutboundCallConfig:
+      type: object
+      description: When `agent` is provided, these `config` options override the agent’s settings.
+      properties:
+        agent:
+          type: string
+          description: The name of the agent to use for the call.
+          example: "support-agent"
+        project:
+          type: string
+          description: The name of the project to use for the call. Ignored when `agent` is provided.
+          default: "main"
+          example: "customer-support"
+        welcome_message:
+          type: [string, "null"]
+          description: Message to play when the conversation starts. Can contain template variables like `{{customer_name}}`.
+          default: "null"
+          example: "Hi {{customer_name}}. How can I help you today?"
+        system_prompt:
+          type: string
+          description: Instructions for the conversation. Can contain template variables like `{{subject}}`.
+          default: Respond in 1-2 sentences.
+          example: "You are an expert in {{subject}}. Be friendly, helpful and concise."
+        template_variables:
+          type: object
+          additionalProperties:
+            type: string
+          description: Variables that can be used in the welcome message and the system prompt.
+          example:
+            customer_name: "David"
+            subject: "Chess"
+        voice_id:
+          type: string
+          description: The voice ID to use for the agent.
+          default: "grant"
+          example: "sarah"
+        no_input_poke_sec:
+          type: [integer, "null"]
+          description: Number of seconds of silence before sending a poke message. `null` disables the poke message.
+          default: "null"
+        no_input_poke_text:
+          type: string
+          description: The message to send after the specified silence.
+          default: Are you still there?
+        no_input_end_conversation_sec:
+          type: integer
+          description: Seconds of silence before ending the conversation.
+          default: 180
+        boosted_keywords:
+          type: array
+          items:
+            type: string
+          description: These words, or short phrases, will be more accurately recognized by the agent.
+          example: ["Load ID", "dispatch"]
+        tools:
+          type: array
+          items:
+            anyOf:
+              - type: string
+                enum:
+                  - keypad_input
+                  - natural_conversation_ending
+                description: Built-in tool
+              - type: string
+                description: Custom tool
+                example: send_email
+          description: Array of built-in or custom tool names to use.
   examples:
     AgentExample:
       value:
@@ -426,7 +567,7 @@ components:
         timezone: America/Los_Angeles
         voice_id: sarah
         audio_format: pcm_44100
-        welcome_message: Hey {{customer_name}}. How can I help you today?
+        welcome_message: Hi {{customer_name}}. How can I help you today?
         system_prompt: You are an expert in {{subject}}. Be friendly, helpful and concise.
         template_variables:
           customer_name:
