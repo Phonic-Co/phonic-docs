@@ -18,7 +18,8 @@
               "api-reference/agents/list",
               "api-reference/agents/get",
               "api-reference/agents/create",
-              "api-reference/agents/update"
+              "api-reference/agents/update",
+              "api-reference/agents/upsert"
             ]
           },
           {
