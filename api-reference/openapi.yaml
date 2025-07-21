@@ -371,6 +371,50 @@ paths:
         - lang: python
           source: |
             Coming soon
+    delete:
+      description: Deletes an agent by name or ID.
+      parameters:
+        - name: nameOrId
+          in: path
+          description: The name or the ID of the agent to delete.
+          required: true
+          schema:
+            type: string
+        - name: project
+          in: query
+          description: The name of the project containing the agent. Only used when `nameOrId` is a name.
+          required: false
+          schema:
+            type: string
+            default: main
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the agent was deleted successfully.
+                required:
+                  - success
+              example:
+                success: true
+      x-codeSamples:
+        - lang: typescript
+          source: |
+            import { Phonic } from "phonic";
+
+            const phonic = new Phonic("ph_...");
+
+            const agent = await phonic.agents.delete("support-agent", {
+              project: "customer-support"
+            });
+        - lang: python
+          source: |
+            Coming soon
   /conversations/outbound_call:
     post:
       description: Initiates a call to a given phone number.
