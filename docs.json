@@ -35,9 +35,18 @@
           {
             "group": "Conversations",
             "pages": [
-              "api-reference/webhooks/conversation_analysis",
-              "api-reference/webhooks/conversation_ended"
+              "webhooks/conversation_analysis",
+              "webhooks/conversation_ended"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Guides",
+            "pages": ["guides/websocket_tools"]
           }
         ]
       }

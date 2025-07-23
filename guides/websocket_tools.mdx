@@ -1,0 +1,163 @@
+---
+title: "WebSocket tools"
+description: "Learn how to create and use WebSocket tools with an agent using the Node SDK."
+---
+
+When using WebSocket tools, Phonic sends you a `tool_call` message over the WebSocket connection. 
+Your job is to respond with a `tool_call_output` message that contains the result of the tool call.
+
+WebSocket tools have two execution modes:
+
+* `sync` - Should be used when you can return the result immediately (i.e. synchronously). The conversation will wait to get the `tool_call_output` message from you before continuing.
+* `async` - Should be used when you don't have the result immediately available (e.g. you need to perform a network request, a query to an LLM, etc.). The conversation will continue seamlessly while the tool runs in the background.
+
+In this guide, we’ll create two WebSocket tools:
+* a `sync` tool to get the current time
+* an `async` tool to get the current temperature
+
+<Tip>We’ll use the [Node SDK](https://github.com/Phonic-Co/phonic-node) to create the tools and the agent, but you can also create them through the Phonic UI.</Tip>
+
+# 1. Create WebSocket tools
+
+First, let’s create the `current_time` sync tool.
+
+```ts highlight=9
+import { Phonic } from "phonic";
+
+const phonic = new Phonic(process.env.PHONIC_API_KEY);
+
+const currentTimeResult = await phonic.tools.create({
+  name: "current_time",
+  description: "Returns the current time in the given location",
+  type: "custom_websocket",
+  executionMode: "sync",
+  parameters: [
+    {
+      type: "string",
+      name: "location",
+      description: "The location to get the current time for",
+      isRequired: true,
+    },
+  ],
+});
+
+console.log(JSON.stringify(currentTimeResult, null, 2));
+```
+
+<Expandable title="result">
+```json
+{
+  "data": {
+    "id": "tool_b4645534-6468-464c-aca9-73e2fbfd582e",
+    "name": "current_time"
+  },
+  "error": null
+}
+```
+</Expandable>
+
+Now, let’s create the `current_temperature` async tool.
+
+```ts highlight=5
+const currentTemperatureResult = await phonic.tools.create({
+  name: "current_temperature",
+  description: "Returns the current temperature in the given location",
+  type: "custom_websocket",
+  executionMode: "async",
+  parameters: [
+    {
+      type: "string",
+      name: "location",
+      description: "The location to get the current temperature for",
+      isRequired: true,
+    },
+  ]
+});
+
+console.log(JSON.stringify(currentTemperatureResult, null, 2));
+```
+
+<Expandable title="result">
+```json
+{
+  "data": {
+    "id": "tool_53e18da7-9a65-4011-bbc0-67e4875e3a63",
+    "name": "current_temperature"
+  },
+  "error": null
+}
+```
+</Expandable>
+
+# 2. Create an agent
+
+Now, let’s create an agent that will use the tools we just created.
+
+```ts highlight=6
+const agentResult = await phonic.agents.create({
+  name: "websocket-tools",
+  audioFormat: "mulaw_8000",
+  welcomeMessage: "Hi, how can I help you today?",
+  systemPrompt: "Be helpful and concise.",
+  tools: ["current_time", "current_temperature"],
+});
+
+console.log(JSON.stringify(agentResult, null, 2));
+```
+
+<Expandable title="result">
+```json
+{
+  "data": {
+    "id": "agent_77f2f5f2-8aa2-424a-a266-944c929f2700",
+    "name": "websocket-tools"
+  },
+  "error": null
+}
+```
+</Expandable>
+
+<Info>[Create agent API Reference](/api-reference/agents/create)</Info>
+
+# 3. Connect to Phonic WebSocket
+
+Now, we can open a WebSocket connection with the agent and handle incoming `tool_call` messages.
+
+```ts highlight=2,13-16,24-29
+const phonicWebSocket = phonic.sts.websocket({
+  agent: "websocket-tools",
+  input_format: "mulaw_8000",
+  output_format: "mulaw_8000",
+});
+
+phonicWebSocket.onMessage((message) => {
+  switch (message.type) {
+    case "tool_call": {
+      switch (message.tool_name) {
+        case "current_time": {
+          // In practice, use `message.parameters.location` to calculate the current time
+          phonicWebSocket.sendToolCallOutput({
+            toolCallId: message.tool_call_id,
+            output: "4:15 PM" // output can be a primitive like a string, number, etc.
+          });
+          break;
+        }
+
+        case "current_temperature": {
+          // Emulate a request that takes time
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          
+          phonicWebSocket.sendToolCallOutput({
+            toolCallId: message.tool_call_id,
+            output: { // output can be any object
+              temperature: "75 degrees Fahrenheit"
+            }
+          });
+          break;
+        }
+      }
+      break;
+    }
+  }
+}
+```
