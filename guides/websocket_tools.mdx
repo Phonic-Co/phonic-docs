@@ -123,7 +123,7 @@ console.log(JSON.stringify(agentResult, null, 2));
 
 Now, we can open a WebSocket connection with the agent and handle incoming `tool_call` messages.
 
-```ts highlight=2,13-16,24-29
+```ts highlight=2,9,13-16,24-29
 const phonicWebSocket = phonic.sts.websocket({
   agent: "websocket-tools",
   input_format: "mulaw_8000",
