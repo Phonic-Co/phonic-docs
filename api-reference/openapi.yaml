@@ -632,7 +632,7 @@ paths:
 
             const result = await phonic.projects.update("customer-support", {
               name: "updated-customer-support",
-              default_agent: "another-agent"
+              defaultAgent: "another-agent"
             });
         - lang: python
           source: |
