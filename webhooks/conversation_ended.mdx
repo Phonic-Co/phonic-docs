@@ -14,35 +14,44 @@ Here is an example of the POST request JSON payload:
   "data": {
     "conversation": {
       "id": "conv_894dcb66-c3dd-4160-8606-30387e8ab9b5",
-      "external_id": null,
+      "agent": {
+        "id": "agent_03701680-8afb-48d6-a3c3-e1357350901b",
+        "name": "my-agent",
+        "is_deleted": false,
+      },
       "workspace": "phonic",
       "project": {
         "id": "proj_8e5bdac5-868d-46fa-b397-439e777f7bfd",
         "name": "main"
       },
-      "audio_url": "...",
+      "external_id": null,
       "model": "merritt",
+      "welcome_message": "Hey, how can I help?",
+      "template_variables": {
+        "customer_name": "David"
+      },
       "input_format": "pcm_44100",
       "output_format": "pcm_44100",
-      "welcome_message": "Hey, how can I help?",
-      "template_variables": {},
+      "live_transcript": "Hey, how can I help?",
+      "post_call_transcript": "Hey, how can I help?",
+      "duration_ms": 46537,
+      "audio_url": "...",
+      "started_at": "2025-07-14T11:35:40.617Z",
+      "ended_at": "2025-07-14T11:36:27.154Z",
+      "task_results": [],
       "items": [
         {
           "item_idx": 0,
           "role": "assistant",
+          "live_transcript": "Hey, how can I help?",
           "voice_id": "grant",
-          "duration_ms": 26.71,
-          "audio_speed": 1,
           "system_prompt": "Help the user to book a dentist appointment.",
-          "text": "Hey, how can I help?",
-          "tool_calls": [],
+          "audio_speed": 1,
+          "duration_ms": 26.71,
           "started_at": "2025-07-14T11:35:41.717Z",
+          "tool_calls": []
         }
       ],
-      "text": "Hey, how can I help?",
-      "duration_ms": 46537,
-      "started_at": "2025-07-14T11:35:40.617Z",
-      "ended_at": "2025-07-14T11:36:27.154Z"
     },
     "call_info": {
       "from_phone_number": "+17124583766",
